@@ -16,4 +16,4 @@ ADD . /doxyparse
 WORKDIR /doxyparse
 
 ENTRYPOINT ["linux32"]
-CMD ["sh", "compile-pkg.sh"]
+RUN ["linux32", "sh", "compile-pkg.sh"]

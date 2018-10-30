@@ -29,3 +29,9 @@ deploy:
     script: sh scripts/create-gh-release.sh
     on:
         branch: master
+
+    # Deploys to DoxyParse official dockerhub
+    provider: script
+    script: sh deploy-2-dockerhub.sh
+    on:
+        branch: master
