@@ -92,15 +92,15 @@ bool ClassSDict::declVisible(const ClassDef::CompoundType *filter) const
 }
 
 
-static bool should_write_declaration(ClassDef *class_def){
+static bool should_write_declaration(ClassDef *cd, bool extractPrivate,
+                                      const ClassDef::CompoundType *filter){
   bool should = FALSE;
-  if (cd->name().find('@')==-1 &&
-          !cd->isExtension() &&
+  if (cd->name().find('@')==-1 && !cd->isExtension() &&
           (cd->protection()!=Private || extractPrivate) &&
-          (filter==0 || *filter==cd->compoundType()){
+          (filter==0 || *filter==cd->compoundType())){
+           
             should = TRUE;
-          }
-  else{
+  }else{
     should = FALSE;
   }
   
@@ -121,7 +121,7 @@ void ClassSDict::writeDeclaration(OutputList &ol,const ClassDef::CompoundType *f
     for (sdi.toFirst();(cd=sdi.current());++sdi)
     {
       //printf("  ClassSDict::writeDeclaration for %s\n",cd->name().data());
-      if (should_write_declaration(cd))
+      if (should_write_declaration(cd, extractPrivate, filter))
       {
         cd->writeDeclarationLink(ol,found,header,localNames);
       }
@@ -131,7 +131,7 @@ void ClassSDict::writeDeclaration(OutputList &ol,const ClassDef::CompoundType *f
 }
 
 
-void bool is_valid_doc(ClassDef *class_def){
+bool is_valid_doc(ClassDef *cd, Definition * container){
   
   bool valid = FALSE;
 
@@ -172,7 +172,7 @@ void ClassSDict::writeDocumentation(OutputList &ol,Definition * container)
       //  cd->name().data(),cd->getOuterScope(),cd->isLinkableInProject(),cd->isEmbeddedInOuterScope(),
       //  container,cd->partOfGroups() ? cd->partOfGroups()->count() : 0);
 
-      if (is_valid_doc(cd)) // if container==0 -> show as part of the group docs, otherwise only show if not part of a group  
+      if (is_valid_doc(cd, container)) // if container==0 -> show as part of the group docs, otherwise only show if not part of a group  
       {
         //printf("  showing class %s\n",cd->name().data());
         if (!found)
