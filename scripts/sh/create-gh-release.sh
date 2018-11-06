@@ -33,8 +33,9 @@ curl --data "$(generate_post_data)" $REPO_URL
 # Upload the assets(.deb-amd64, .deb-i386 and .tar.gz-amd64, .tar.gz-i386) to the release
 
 # Deploying to analizo.org (https://github.com/analizo/analizo.github.io)
-# TODO: Refactor this and 
-# git remote add analizo-org https://github.com/GCES2018-2/analizo.github.io.git
-# git config --global push.default simple
+ git remote add analizo-org https://github.com/GCES2018-2/analizo.github.io.git
+ git config --global push.default simple
+
+# TODO: Refactor this to support group key
 # git push analizo-org testing-deploy
 # ./download/update-repository #chave gpg

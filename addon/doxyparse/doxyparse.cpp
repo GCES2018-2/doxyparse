@@ -22,6 +22,8 @@
 
 #define MAX_FILE_SIZE 1024
 
+#define MAX_FILE_SIZE 1024
+
 class Doxyparse : public CodeOutputInterface
 {
   public:
