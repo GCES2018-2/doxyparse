@@ -1,5 +1,6 @@
 import sys
-import MemberType 
+# from search import search.MemberType 
+import search
 
 class Finder:
     def __init__(self,cn,name,row_type=str):
@@ -11,7 +12,7 @@ class Finder:
         if self.row_type is int:
             return " id=?"
         else:
-            if g_use_regexp == True:
+            if search.g_use_regexp == True:
                 return " REGEXP (?,%s)" %row
             else:
                 return " %s=?" %row
@@ -60,7 +61,7 @@ class Finder:
 ###############################################################################
     def function(self):
         o=[]
-        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,MemberType.Function])
+        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,search.MemberType.Function])
         for r in c.fetchall():
             item={}
             item['name'] = r['name']
@@ -84,7 +85,7 @@ class Finder:
 ###############################################################################
     def macro(self):
         o=[]
-        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,MemberType.Define])
+        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,search.MemberType.Define])
         for r in c.fetchall():
             item={}
             item['name'] = r['name']
@@ -98,7 +99,7 @@ class Finder:
 ###############################################################################
     def typedef(self):
         o=[]
-        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,MemberType.Typedef])
+        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,search.MemberType.Typedef])
         for r in c.fetchall():
             item={}
             item['name'] = r['name']
@@ -110,7 +111,7 @@ class Finder:
 ###############################################################################
     def variable(self):
         o=[]
-        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,MemberType.Variable])
+        c=self.cn.execute('SELECT * FROM memberdef WHERE'+self.match("name")+' AND kind=?',[self.name,search.MemberType.Variable])
         for r in c.fetchall():
             item={}
             item['name'] = r['name']

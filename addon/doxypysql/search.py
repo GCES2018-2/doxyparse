@@ -15,7 +15,9 @@ import os
 import getopt
 import json
 import re
+
 import finder
+
 
 
 class MemberType:
@@ -88,14 +90,14 @@ def processHref(cn,ref):
     table="memberdef"
     if ( cn.execute("SELECT count(*) from %s WHERE refid=?"%table,[ref] ).fetchone()[0] > 0 ):
         for r in cn.execute("SELECT kind,id FROM %s WHERE refid='%s'" % (table,ref) ).fetchall():
-            f=Finder(cn,r['id'],int)
+            f=finder.Finder(cn,r['id'],int)
             j=process(f,str(r['kind']))
 
     # is it in compounddef ?
     table="compounddef"
     if ( cn.execute("SELECT count(*) from %s WHERE refid=?"%table,[ref]).fetchone()[0] > 0 ):
         for r in cn.execute("SELECT id FROM %s WHERE refid=?"%table,[ref] ).fetchall():
-            f=Finder(cn,r['id'],int)
+            f=finder.Finder(cn,r['id'],int)
             j=process(f,RequestType.Struct)
 
     return j
@@ -186,7 +188,7 @@ def serveCli(argv):
             ref = o
 
         cn=openDb(dbname)
-        f=Finder(cn,o)
+        f=finder.Finder(cn,o)
         if ref != None:
           j=processHref(cn,ref)
         else:
