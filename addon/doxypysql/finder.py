@@ -1,8 +1,33 @@
 import sys
-# from search import search.MemberType 
 import search
+import abc
 
-class Finder:
+class BaseFinder(object):
+    __metaclass__ = abc.ABCMeta
+     
+    @abc.abstractmethod
+    def match(self,row):
+        return
+
+    @abc.abstractmethod
+    def fileName(self,id_file):
+        return
+
+    @abc.abstractmethod    
+    def fileId(self,name):
+        return
+
+    @abc.abstractmethod    
+    def references(self):
+        return
+
+    @abc.abstractmethod    
+    def macro(self):
+        return
+    
+
+
+class Finder(BaseFinder):
     def __init__(self,cn,name,row_type=str):
         self.cn=cn
         self.name=name
