@@ -9,14 +9,6 @@ class BaseFinder(object):
     def match(self,row):
         return
 
-    @abc.abstractmethod
-    def fileName(self,id_file):
-        return
-
-    @abc.abstractmethod    
-    def fileId(self,name):
-        return
-
     @abc.abstractmethod    
     def references(self):
         return
@@ -24,10 +16,39 @@ class BaseFinder(object):
     @abc.abstractmethod    
     def macro(self):
         return
+
+class BaseFile(object):
+    
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def fileName(self,id_file):
+        return
+
+    @abc.abstractmethod    
+    def fileId(self,name):
+        return
+     
+    @abc.abstractmethod 
+    def file(self):
+        return
+
+class Include(object):
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def includers(self):
+        return
+
+    @abc.abstractmethod
+    def includees(self):
+        return
     
 
 
-class Finder(BaseFinder):
+class Finder(BaseFinder, BaseFile, Include):
+    
     def __init__(self,cn,name,row_type=str):
         self.cn=cn
         self.name=name
