@@ -7,6 +7,12 @@ before_install:
     - sudo apt-add-repository ppa:smspillaz/cmake-2.8.12 -y
     - sudo apt-get update -qq
     - openssl aes-256-cbc -K $encrypted_f4b786671656_key -iv $encrypted_f4b786671656_iv -in auth-token.enc -out auth-token -d
+    # Decrypting TOKEN_SHA
+    - openssl aes-256-cbc -K $encrypted_f4b786671656_key -iv $encrypted_f4b786671656_iv -in auth-token.enc -out auth-token -d
+env:
+    global:
+        - DOCKER_USERNAME=
+        - DOCKER_PASSWORD=
 
 install:
     - sudo apt-get install -qq texlive
@@ -26,12 +32,12 @@ script:
 deploy:
     # Deploys to Doxyparse official GitHub
     provider: script
-    script: sh scripts/create-gh-release.sh
+    script: sh scripts/sh/create-gh-release.sh
     on:
         branch: master
 
     # Deploys to DoxyParse official dockerhub
     provider: script
-    script: sh deploy-2-dockerhub.sh
+    script: sh scripts/sh/deploy-2-dockerhub.sh
     on:
         branch: master
