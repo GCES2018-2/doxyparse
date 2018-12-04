@@ -18,27 +18,7 @@
  *
  */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include "version.h"
-#include "doxygen.h"
-#include "outputgen.h"
-#include "parserintf.h"
-#include "classlist.h"
-#include "config.h"
-#include "filedef.h"
-#include "util.h"
-#include "filename.h"
-#include "arguments.h"
-#include "memberlist.h"
-#include "types.h"
-#include <string>
-#include <cstdlib>
-#include <sstream>
-#include <map>
-#include <qcstring.h>
-#include <qregexp.h>
-#include "namespacedef.h"
+#include "checkingFunctions.hpp"
 
 #define MAX_FILE_SIZE 1024
 
@@ -80,8 +60,6 @@ class Doxyparse : public CodeOutputInterface
   private:
     FileDef *m_fd;
 };
-
-static bool is_c_code = true;
 
 static void findXRefSymbols(FileDef *fd)
 {
@@ -246,25 +224,6 @@ void cModule(ClassDef* cd) {
   }
 }
 
-static bool checkOverrideArg(ArgumentList *argList, MemberDef *md) {
-  ArgumentListIterator iterator(*argList);
-  Argument * argument = iterator.toFirst();
-
-  if(!md->isFunction() || argList->count() == 0){
-      return false;
-  }
-
-  if(argument != NULL) {
-    for(; (argument = iterator.current()); ++iterator){
-        if(md->name() == argument->name) {
-            return true;
-        }
-    }
-  }
-
-  return false;
-}
-
 void functionInformation(MemberDef* md) {
   int size = md->getEndBodyLine() - md->getStartBodyLine() + 1;
   printNumberOfLines(size);
@@ -379,7 +338,7 @@ static void listSymbols() {
   FileNameListIterator fnli(*Doxygen::inputNameList);
   FileName *fn;
 
-  detectProgrammingLanguage(fnli);
+  checkProgrammingLanguage(fnli);
 
   // for each file
   for (fnli.toFirst(); (fn=fnli.current()); ++fnli) {
@@ -393,18 +352,7 @@ static void listSymbols() {
         printDefines();
         listMembers(ml);
       }
-
-      ClassSDict *classes = fd->getClassSDict();
-      if (classes) {
-        ClassSDict::Iterator cli(*classes);
-        ClassDef *cd;
-        for (cli.toFirst(); (cd = cli.current()); ++cli) {
-          if (!cd->visited) {
-            classInformation(cd);
-            cd->visited=TRUE;
-          }
-        }
-      }
+      checkClasses(fd);
     }
   }
   // TODO print external symbols referenced
