@@ -32,7 +32,7 @@ script:
 deploy:
     # Deploys to Doxyparse official GitHub
     provider: script
-    script: sh scripts/sh/create-gh-release.sh
+    script: sh scripts/sh/simple-create-gh-release.sh
     on:
         branch: master
 
