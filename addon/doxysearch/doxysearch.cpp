@@ -199,19 +199,11 @@ static bool insideRange(const std::vector<Range> &ranges,int start,int len)
  *  more \a words. The list is sorted according to the 
  *  number of occurrences of words within the fragment.
  */ 
-static void highlighter(const std::string &s,
-                 const std::vector<std::string> &words,
-                 std::vector<Fragment> &fragments)
-{
-  const std::string spanStart="<span class=\"hl\">";
-  const std::string spanEnd="</span>";
-  const std::string dots="...";
-  const int fragLen = 60;
-  int sl=s.length();
 
+static void find_position(std::vector<WordPosition> *positions){
   // find positions of words in s
   size_t j=0;
-  std::vector<WordPosition> positions;
+ 
   for (std::vector<std::string>::const_iterator it=words.begin();
        it!=words.end();
        ++it,++j
@@ -226,6 +218,22 @@ static void highlighter(const std::string &s,
       pos=i+word.length();
     }
   }
+}
+
+static void highlighter(const std::string &s,
+                 const std::vector<std::string> &words,
+                 std::vector<Fragment> &fragments)
+{
+  const std::string spanStart="<span class=\"hl\">";
+  const std::string spanEnd="</span>";
+  const std::string dots="...";
+  const int fragLen = 60;
+  int sl=s.length();
+
+  std::vector<WordPosition> positions*;
+
+  find_position(positions);
+
   // sort on position
   std::sort(positions.begin(),positions.end(),WordPosition_less());
   // get fragments around words

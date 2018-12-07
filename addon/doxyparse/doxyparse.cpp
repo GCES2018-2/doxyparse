@@ -18,27 +18,13 @@
  *
  */
 
-#include <stdlib.h>
-#include <unistd.h>
-#include "version.h"
-#include "doxygen.h"
-#include "outputgen.h"
-#include "parserintf.h"
-#include "classlist.h"
-#include "config.h"
-#include "filedef.h"
-#include "util.h"
-#include "filename.h"
-#include "arguments.h"
-#include "memberlist.h"
-#include "types.h"
-#include <string>
-#include <cstdlib>
-#include <sstream>
-#include <map>
-#include <qcstring.h>
-#include <qregexp.h>
-#include "namespacedef.h"
+#include "checkingFunctions.hpp"
+
+#define MAX_FILE_SIZE 1024
+
+#define MAX_FILE_SIZE 1024
+
+#define MAX_FILE_SIZE 1024
 
 class Doxyparse : public CodeOutputInterface
 {
@@ -78,8 +64,6 @@ class Doxyparse : public CodeOutputInterface
   private:
     FileDef *m_fd;
 };
-
-static bool is_c_code = true;
 
 static void findXRefSymbols(FileDef *fd)
 {
@@ -174,7 +158,7 @@ static int isPartOfCStruct(MemberDef * md) {
 std::string sanitizeString(std::string data) {
   QCString new_data = QCString(data.c_str());
   new_data.replace(QRegExp("\""), "");
-  new_data.replace(QRegExp("\\"), ""); // https://github.com/analizo/analizo/issues/138
+  new_data.replace(QRegExp("\\"), "");
   return !new_data.isEmpty() ? new_data.data() : "";
 }
 
@@ -242,25 +226,6 @@ void cModule(ClassDef* cd) {
       }
     }
   }
-}
-
-static bool checkOverrideArg(ArgumentList *argList, MemberDef *md) {
-  ArgumentListIterator iterator(*argList);
-  Argument * argument = iterator.toFirst();
-
-  if(!md->isFunction() || argList->count() == 0){
-      return false;
-  }
-
-  if(argument != NULL) {
-    for(; (argument = iterator.current()); ++iterator){
-        if(md->name() == argument->name) {
-            return true;
-        }
-    }
-  }
-
-  return false;
 }
 
 void functionInformation(MemberDef* md) {
@@ -348,21 +313,25 @@ static bool checkLanguage(std::string& filename, std::string extension) {
   }
 }
 
+static bool checkFileExtension(std::string filename){
+  std::string file_extensions[] = {".cc", ".cxx", ".cpp", ".java", ".py", ".pyw", ".cs"};
+
+  for (int i = 0; i < sizeof(file_extensions); i++) {
+    bool invalid_extension = checkLanguage(filename, file_extensions[i]);
+    if (invalid_extension) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /* Detects the programming language of the project. Actually, we only care
  * about whether it is a C project or not. */
 static void detectProgrammingLanguage(FileNameListIterator& fnli) {
   FileName* fn;
   for (fnli.toFirst(); (fn=fnli.current()); ++fnli) {
     std::string filename = fn->fileName();
-    if (
-        checkLanguage(filename, ".cc") ||
-        checkLanguage(filename, ".cxx") ||
-        checkLanguage(filename, ".cpp") ||
-        checkLanguage(filename, ".java") ||
-        checkLanguage(filename, ".py") ||
-        checkLanguage(filename, ".pyw") ||
-        checkLanguage(filename, ".cs")
-       ) {
+    if (checkFileExtension(filename)) {
       is_c_code = false;
     }
   }
@@ -373,7 +342,7 @@ static void listSymbols() {
   FileNameListIterator fnli(*Doxygen::inputNameList);
   FileName *fn;
 
-  detectProgrammingLanguage(fnli);
+  checkProgrammingLanguage(fnli);
 
   // for each file
   for (fnli.toFirst(); (fn=fnli.current()); ++fnli) {
@@ -387,18 +356,7 @@ static void listSymbols() {
         printDefines();
         listMembers(ml);
       }
-
-      ClassSDict *classes = fd->getClassSDict();
-      if (classes) {
-        ClassSDict::Iterator cli(*classes);
-        ClassDef *cd;
-        for (cli.toFirst(); (cd = cli.current()); ++cli) {
-          if (!cd->visited) {
-            classInformation(cd);
-            cd->visited=TRUE;
-          }
-        }
-      }
+      checkClasses(fd);
     }
   }
   // TODO print external symbols referenced
@@ -455,7 +413,7 @@ int main(int argc,char **argv) {
   Config_getList(INPUT).clear();
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-") == 0) {
-      char filename[1024];
+      char filename[MAX_FILE_SIZE];
       while (1) {
         scanf("%s[^\n]", filename);
         if (feof(stdin)) {

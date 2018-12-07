@@ -1,0 +1,18 @@
+# Using i386 Architecture
+FROM i386/debian:jessie
+
+RUN apt-get update -qq && \
+    apt-get install -y flex \
+                       bison \
+                       git \
+                       cmake \
+                       build-essential \
+                       python \
+                       debhelper \
+                       devscripts
+
+RUN git clone https://github.com/GCES2018-2/doxyparse.git /doxyparse
+
+WORKDIR /doxyparse
+
+RUN ["linux32", "sh", "scripts/sh/compile-pkg.sh"]
